@@ -1,13 +1,11 @@
 const { Command } = require('@sapphire/framework')
-const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
-const util = require('@chaos/util')
 
 class EvalCommand extends Command {
     constructor(context, options) {
         super(context, {
             name: 'eval',
-            description: 'evals stuff',
+            description: 'Evaluates code',
             detailedDescription: '',
             chatInputCommand: {
                 register: true
@@ -26,6 +24,11 @@ class EvalCommand extends Command {
     }
     async chatInputRun(interaction) {
         await interaction.deferReply();
+        if (interaction.user.id !== process.env.OWNER_ID) {
+            var errorembed = new MessageEmbed()
+                .setTitle("Only the bot owner can use this command!")
+            return interaction.followUp({ embeds: [errorembed], ephemeral: true })
+        }
         const t0 = performance.now();
         var author = interaction.user;
         try {
@@ -36,17 +39,17 @@ class EvalCommand extends Command {
             if (clean(evaled).length >= 2000) {
                 var errorembed = new MessageEmbed()
                     .setTitle("Evaluation is over 2000 characters long, the length is " + clean(evaled).length)
-                interaction.reply({ embeds: [errorembed], ephemeral: true })
+                interaction.followUp({ embeds: [errorembed], ephemeral: true })
             } else {
                 var t1 = performance.now();
                 var embed = new MessageEmbed()
                     .setTitle("Evaluated Code: " + clean(evaled).length)
                     .setDescription("```nimrod\n" + clean(evaled) + "```")
                     .setFooter({ text: "Took " + (t1 - t0).toFixed(3) + "ms (" + ((t1 - t0) * 1000).toFixed(3) + "µs)" });
-                interaction.reply({ embeds: [embed], })
+                interaction.followUp({ embeds: [embed], })
             }
         } catch (err) {
-            interaction.reply({ content: `\`ERROR\` \`\`\`xl\n${clean(err)}\n\`\`\``, ephemeral: true });
+            interaction.followUp({ content: `\`ERROR\` \`\`\`xl\n${clean(err)}\n\`\`\``, ephemeral: true });
         }
     }
 };

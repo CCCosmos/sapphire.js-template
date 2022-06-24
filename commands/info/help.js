@@ -1,6 +1,5 @@
 const { Command } = require('@sapphire/framework')
-const { MessageActionRow, MessageSelectMenu, MessageEmbed } = require('discord.js');
-const moment = require('moment')
+const { MessageEmbed } = require('discord.js');
 class HelpCommand extends Command {
     constructor(context, options) {
         super(context, {
@@ -27,7 +26,7 @@ class HelpCommand extends Command {
 
         this.store.forEach(cmd => {
             const commandCategory = cmd.fullCategory[0]
-            if (cmd.name === 'eval') { return }
+            if (cmd.name === 'eval') return 
             switch (commandCategory) {
                 case 'fun':
                     fun.push(`\`${cmd.name}\``)
@@ -49,25 +48,28 @@ class HelpCommand extends Command {
                     break;
                 case 'bot':
                     bot.push(`\`${cmd.name}\``)
+                    break;
                 default:
                     break;
             }
         })
+        // If you do not want to have a certain field put // in front of the .addField
+        // Only add the field if there is commands in the field
+        // Eval is not included in command list for safety purposes
         if (!interaction.options.getString('commandname')) {
             var embed = new MessageEmbed()
-                .addField("Fun", fun.join(", "))
-                .addField("Info", info.join(", "))
-                .addField("Moderation", moderation.join(", "))
-                .addField("Util", util.join(", "))
-                .addField("Image", image.join(", "))
-                .addField("Config", config.join(", "))
+                // .addField("Fun", fun.join(", "))
+                // .addField("Moderation", moderation.join(", "))
+                // .addField("Image", image.join(", "))
+                // .addField("Config", config.join(", "))
                 .addField("Bot", bot.join(", "))
+                .addField("Info", info.join(", "))
+                // .addField("Util", util.join(", "))
             interaction.reply({ embeds: [embed] })
         } else {
-            var embed
             this.store.forEach(cmd => {
                 if (cmd.name === interaction.options.getString('commandname')) {
-                    embed = new MessageEmbed()
+                    var embed = new MessageEmbed()
                         .addField(cmd.name, cmd.description)
                         .addField('Usage', `/${cmd.name} ${cmd.detailedDescription}`)
                         .setFooter({ text: 'Do not literally type out < > [ ] | ect.' })

@@ -1,6 +1,4 @@
 const { Command } = require('@sapphire/framework')
-const { SlashCommandBuilder } = require('@discordjs/builders')
-const ping = require('ping')
 class PingCommand extends Command {
     constructor(context, options) {
         super(context, {
@@ -22,21 +20,8 @@ class PingCommand extends Command {
         );
     }
     async chatInputRun(interaction) {
-        if (interaction.guild === null) {
-            var sent = await interaction.reply({ content: 'Ping?', fetchReply: true });
-            (async function () {
-                const result = await ping.promise.probe('www.google.com', {});
-                const discord = await ping.promise.probe('www.discord.com', {});
-                interaction.editReply(`Pong! Took ${Date.now() - interaction.createdTimestamp}ms. (Discord latency: ${Math.round(discord.avg)}ms. Network latency: ${Math.round(result.avg)}ms)`);
-            })();
-        } else {
-            var sent = await interaction.reply({ content: 'Ping?', fetchReply: true });
-            (async function () {
-                const result = await ping.promise.probe('www.google.com', {});
-                const discord = await ping.promise.probe('www.discord.com', {});
-                interaction.editReply(`Pong! Took ${sent.createdTimestamp - interaction.createdTimestamp}ms. (Discord latency: ${Math.round(discord.avg)}ms. Network latency: ${Math.round(result.avg)}ms)`);
-            })();
-        }
+        await interaction.reply({ content: 'Ping?', fetchReply: true });
+        interaction.editReply(`Pong! Took ${Date.now() - interaction.createdTimestamp}ms.`);
     }
 }
 
